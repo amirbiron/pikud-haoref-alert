@@ -6,6 +6,9 @@
 שימוש:
     TELEGRAM_BOT_TOKEN=xxx TELEGRAM_CHAT_ID=yyy python monitor.py
 """
+from dotenv import load_dotenv
+load_dotenv()
+
 import asyncio
 import os
 import signal
@@ -16,7 +19,7 @@ from zoneinfo import ZoneInfo
 
 from database import init_db, is_seen, mark_seen, is_alert_sent, save_alert, cleanup_old
 from logger import get_logger
-from notifier import send_alert, send_message
+from notifier import send_alert, send_message, validate_chat
 from scraper import fetch_latest_messages
 
 log = get_logger("Monitor")
@@ -139,6 +142,10 @@ async def run_cycle():
 async def main():
     """לולאה ראשית — סריקה כל POLL_INTERVAL שניות."""
     init_db()
+
+    if not validate_chat():
+        log.error("לא ניתן להתחבר לטלגרם — בדוק TELEGRAM_BOT_TOKEN ו-TELEGRAM_CHAT_ID")
+        sys.exit(1)
 
     log.info(f"מתחיל ניטור פיקוד העורף | poll={POLL_INTERVAL}s")
     log.info(f"ערים: {ALERT_CITIES}")
