@@ -73,6 +73,17 @@ class TestMatchesFilter:
         match, _ = matches_filter(text)
         assert match is True
 
+    def test_residents_can_leave_variant(self):
+        """השוהים במרחב המוגן יכולים לצאת — ניסוח מרץ 2026."""
+        text = (
+            "ירי רקטות וטילים -  האירוע הסתיים\n"
+            "השוהים במרחב המוגן יכולים לצאת.\n"
+            "תל אביב - דרום העיר ויפו, תל אביב - מזרח"
+        )
+        match, reason = matches_filter(text)
+        assert match is True
+        assert "תל אביב" in reason
+
 
 # ═══════════════════════════════════════════════════════
 # פירוש HTML — scraper
